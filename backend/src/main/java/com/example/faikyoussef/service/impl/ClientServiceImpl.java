@@ -15,11 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ClientServiceImpl implements ClientService {
+public class ClientServiceImpl implements ClientService {    private final ClientRepository clientRepository;
 
-    private final ClientRepository clientRepository;
-
-    @Autowired
     public ClientServiceImpl(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }

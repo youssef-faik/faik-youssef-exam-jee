@@ -4,9 +4,11 @@ import com.example.faikyoussef.entity.*;
 import com.example.faikyoussef.repository.ClientRepository;
 import com.example.faikyoussef.repository.CreditRepository;
 import com.example.faikyoussef.repository.RemboursementRepository;
+import com.example.faikyoussef.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import java.util.Date;
 
@@ -14,13 +16,39 @@ import java.util.Date;
 public class DataInitializer {
 
     @Bean
+    public CommandLineRunner initRoles(RoleRepository roleRepository) {
+        return args -> {
+            // Initialize roles if they don't exist
+            if (roleRepository.count() == 0) {
+                System.out.println("Initializing roles...");
+                
+                Role clientRole = new Role(ERole.ROLE_CLIENT);
+                Role employeRole = new Role(ERole.ROLE_EMPLOYE);
+                Role adminRole = new Role(ERole.ROLE_ADMIN);
+                
+                roleRepository.save(clientRole);
+                roleRepository.save(employeRole);
+                roleRepository.save(adminRole);
+                
+                System.out.println("Roles initialized successfully.");
+            }
+        };
+    }
+
+    @Bean
+    @DependsOn("initRoles")
     CommandLineRunner initDatabase(ClientRepository clientRepository,
                                    CreditRepository creditRepository,
-                                   RemboursementRepository remboursementRepository) {
-        return args -> {
+                                   RemboursementRepository remboursementRepository) {        return args -> {
             // Create Clients
-            Client client1 = new Client(null, "John Doe", "john.doe@example.com", null);
-            Client client2 = new Client(null, "Jane Smith", "jane.smith@example.com", null);
+            Client client1 = new Client();
+            client1.setName("John Doe");
+            client1.setEmail("john.doe@example.com");
+            
+            Client client2 = new Client();
+            client2.setName("Jane Smith");
+            client2.setEmail("jane.smith@example.com");
+            
             clientRepository.save(client1);
             System.out.println("Saved Client: " + client1);
             clientRepository.save(client2);

@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,69 +27,75 @@ public class ClientController {
 
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
-    }
-
-    @PostMapping
+    }    @PostMapping
+    @PreAuthorize("hasRole('EMPLOYE') or hasRole('ADMIN')")
     @Operation(summary = "Create a new client",
-            description = "Creates a new client with the provided details.",            requestBody = @RequestBody(description = "Client data to create",
+            description = "Creates a new client with the provided details.",
+            requestBody = @RequestBody(description = "Client data to create",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ClientDto.class),
                             examples = @ExampleObject(value = "{\"name\": \"John Doe\", \"email\": \"john.doe@example.com\"}"))),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Client created successfully"),
-                    @ApiResponse(responseCode = "400", description = "Invalid input")
-            })
+                    @ApiResponse(responseCode = "400", description = "Invalid input"),
+                    @ApiResponse(responseCode = "403", description = "Access denied")
+            },
+            security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ClientDto> createClient(@Valid @RequestBody ClientDto clientDto) {
         ClientDto savedClient = clientService.saveClient(clientDto);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
+    }    @GetMapping("/{id}")
     @Operation(summary = "Get a client by ID",
             description = "Retrieves a specific client by their ID.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Client found"),
-                    @ApiResponse(responseCode = "404", description = "Client not found")
-            })
+                    @ApiResponse(responseCode = "404", description = "Client not found"),
+                    @ApiResponse(responseCode = "403", description = "Access denied")
+            },
+            security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ClientDto> getClientById(@PathVariable Long id) {
         ClientDto clientDto = clientService.getClientById(id);
         return ResponseEntity.ok(clientDto);
-    }
-
-    @GetMapping
+    }    @GetMapping
+    @PreAuthorize("hasRole('EMPLOYE') or hasRole('ADMIN')")
     @Operation(summary = "Get all clients",
             description = "Retrieves a list of all clients.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved list")
-            })
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved list"),
+                    @ApiResponse(responseCode = "403", description = "Access denied")
+            },
+            security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<List<ClientDto>> getAllClients() {
         List<ClientDto> clients = clientService.getAllClients();
         return ResponseEntity.ok(clients);
-    }
-
-    @PutMapping("/{id}")
+    }    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('EMPLOYE') or hasRole('ADMIN')")
     @Operation(summary = "Update an existing client",
-            description = "Updates an existing client with the provided details.",            requestBody = @RequestBody(description = "Client data to update",
+            description = "Updates an existing client with the provided details.",
+            requestBody = @RequestBody(description = "Client data to update",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ClientDto.class),
                             examples = @ExampleObject(value = "{\"name\": \"Jane Doe\", \"email\": \"jane.doe@example.com\"}"))),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Client updated successfully"),
                     @ApiResponse(responseCode = "400", description = "Invalid input"),
-                    @ApiResponse(responseCode = "404", description = "Client not found")
-            })
+                    @ApiResponse(responseCode = "404", description = "Client not found"),
+                    @ApiResponse(responseCode = "403", description = "Access denied")
+            },
+            security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ClientDto> updateClient(@PathVariable Long id, @Valid @RequestBody ClientDto clientDto) {
         ClientDto updatedClient = clientService.updateClient(id, clientDto);
         return ResponseEntity.ok(updatedClient);
-    }
-
-    @DeleteMapping("/{id}")
+    }    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete a client by ID",
             description = "Deletes a specific client by their ID.",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Client deleted successfully"),
-                    @ApiResponse(responseCode = "404", description = "Client not found")
-            })
+                    @ApiResponse(responseCode = "404", description = "Client not found"),
+                    @ApiResponse(responseCode = "403", description = "Access denied")
+            },
+            security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
