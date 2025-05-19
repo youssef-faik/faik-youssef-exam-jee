@@ -38,4 +38,15 @@ public abstract class Credit {
     @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Remboursement> remboursements;
+
+    @Transient
+    public double getRemainingBalance() {
+        if (remboursements == null || remboursements.isEmpty()) {
+            return this.amount;
+        }
+        double totalRemboursements = remboursements.stream()
+                                                .mapToDouble(Remboursement::getAmount)
+                                                .sum();
+        return this.amount - totalRemboursements;
+    }
 }
