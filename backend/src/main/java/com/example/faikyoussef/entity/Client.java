@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Client {
 
     @Id
@@ -29,5 +31,6 @@ public class Client {
     private String email;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Credit> credits;
 }
