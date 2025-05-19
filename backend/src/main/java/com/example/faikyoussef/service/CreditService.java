@@ -8,6 +8,7 @@ public interface CreditService {
     CreditDto getCreditById(Long id);
     List<CreditDto> getAllCredits();
     List<CreditDto> getCreditsByClientId(Long clientId);
+    List<CreditDto> getCreditsByStatus(String status);
     CreditDto updateCredit(Long id, CreditDto creditDto);
     void deleteCredit(Long id);
     // Add methods for specific credit types or business logic as needed

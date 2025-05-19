@@ -66,6 +66,13 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
+    public List<CreditDto> getCreditsByStatus(String status) {
+        return creditRepository.findByStatus(status).stream()
+                .map(CreditMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public CreditDto updateCredit(Long id, CreditDto creditDto) {
         Credit existingCredit = creditRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Credit not found with id: " + id));
