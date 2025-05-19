@@ -70,6 +70,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version> <!-- Ensure you have lombok.version defined in properties or use the direct version -->
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
