@@ -1,0 +1,138 @@
+<div class="container client-detail-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <a routerLink="/clients" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h2>Client Details</h2>
+    </div>
+    <div class="client-actions">
+      <button class="btn btn-outline-primary btn-action" (click)="toggleEditMode()" *ngIf="!isEditing">
+        <i class="fas fa-edit"></i> Edit
+      </button>
+      <button class="btn btn-outline-danger btn-action" (click)="deleteClient()">
+        <i class="fas fa-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-danger" *ngIf="errorMessage">
+    <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Client Information -->
+  <div class="row" *ngIf="!isLoading && client">
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Client Information</h5>
+        </div>
+        <div class="card-body">
+          <!-- View Mode -->
+          <div *ngIf="!isEditing">
+            <div class="info-label">Client ID</div>
+            <div class="info-value">#{{ client.id }}</div>
+
+            <div class="info-label">Full Name</div>
+            <div class="info-value">{{ client.name }}</div>
+
+            <div class="info-label">Email</div>
+            <div class="info-value email-value">{{ client.email }}</div>
+          </div>
+
+          <!-- Edit Mode -->
+          <form *ngIf="isEditing" (ngSubmit)="saveChanges()">
+            <div class="mb-3">
+              <label for="name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="name" name="name" [(ngModel)]="editedClient.name" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" [(ngModel)]="editedClient.email" required>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" (click)="toggleEditMode()">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a [routerLink]="['/credits/clients', client.id]" class="btn btn-outline-primary btn-action">
+              <i class="fas fa-file-invoice-dollar"></i> View All Credits
+            </a>
+            <button class="btn btn-outline-success btn-action" [routerLink]="['/credits/clients', client.id, 'new']">
+              <i class="fas fa-plus"></i> Create New Credit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <h3 class="section-title">Recent Credits</h3>
+
+      <!-- No Credits Message -->
+      <div class="card" *ngIf="clientCredits.length === 0">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-muted"></i>
+          <h5>No Credits Found</h5>
+          <p class="text-muted">This client doesn't have any credits yet.</p>
+          <button class="btn btn-primary mt-2" [routerLink]="['/credits/clients', client.id, 'new']">
+            <i class="fas fa-plus me-2"></i>Create First Credit
+          </button>
+        </div>
+      </div>
+
+      <!-- Credits List -->
+      <div class="row" *ngIf="clientCredits.length > 0">
+        <div class="col-md-6 mb-4" *ngFor="let credit of clientCredits">
+          <div class="card credit-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span [ngClass]="getStatusClass(credit.status)">{{ credit.status }}</span>
+                <span [ngClass]="getTypeClass(credit.type)">{{ credit.type }}</span>
+              </div>
+
+              <div class="credit-amount">{{ credit.amount | currency:'EUR' }}</div>
+              <div class="credit-date"><i class="far fa-calendar-alt me-1"></i> {{ credit.date }}</div>
+
+              <div class="credit-footer">
+                <a [routerLink]="['/credits', credit.id]" class="btn btn-sm btn-outline-primary">
+                  View Details
+                </a>
+                <a [routerLink]="['/remboursements/credits', credit.id]" class="btn btn-sm btn-outline-secondary btn-view-repayments">
+                  <i class="fas fa-money-bill-wave me-1"></i> Repayments
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View All Credits Link -->
+      <div class="text-center mt-3" *ngIf="clientCredits.length > 0">
+        <a [routerLink]="['/credits/clients', client.id]" class="btn btn-outline-primary">
+          View All Credits
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

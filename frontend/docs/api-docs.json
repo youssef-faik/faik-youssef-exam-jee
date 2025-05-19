@@ -1,0 +1,960 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Banking System API",
+    "description": "RESTful API for managing clients, credits, and repayments in a banking system",
+    "contact": {
+      "name": "Banking System Team",
+      "url": "https://www.bank-example.com",
+      "email": "contact@bank-example.com"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "Banking System Documentation",
+    "url": "https://bank-example.com/docs"
+  },
+  "servers": [
+    { "url": "http://localhost:8081", "description": "Generated server url" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [
+    {
+      "name": "Remboursement Management",
+      "description": "Operations about repayments"
+    },
+    { "name": "Credit Management", "description": "Operations about credits" },
+    { "name": "Credit Management", "description": "APIs for managing credits" },
+    {
+      "name": "Remboursement Management",
+      "description": "APIs for managing remboursements"
+    },
+    {
+      "name": "Authentication",
+      "description": "Operations for authentication and user management"
+    },
+    { "name": "Client Management", "description": "Operations about clients" },
+    { "name": "Client Management", "description": "APIs for managing clients" },
+    {
+      "name": "Authentication",
+      "description": "API for user authentication and registration"
+    }
+  ],
+  "paths": {
+    "/api/v1/remboursements/{id}": {
+      "get": {
+        "tags": ["Remboursement Management"],
+        "summary": "Get a remboursement by ID",
+        "description": "Retrieves a specific remboursement by its ID.",
+        "operationId": "getRemboursementById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remboursement found",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          },
+          "404": {
+            "description": "Remboursement not found",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Remboursement Management"],
+        "summary": "Update an existing remboursement",
+        "description": "Updates an existing remboursement with the provided details. Note: Credit ID cannot be changed via this endpoint.",
+        "operationId": "updateRemboursement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "description": "Remboursement data to update",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RemboursementDto" },
+              "example": {
+                "amount": 550.0,
+                "date": "2025-06-15",
+                "type": "PAYMENT"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Remboursement updated successfully",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          },
+          "404": {
+            "description": "Remboursement not found",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Remboursement Management"],
+        "summary": "Delete a remboursement by ID",
+        "description": "Deletes a specific remboursement by its ID.",
+        "operationId": "deleteRemboursement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Remboursement deleted successfully" },
+          "404": { "description": "Remboursement not found" }
+        }
+      }
+    },
+    "/api/v1/credits/{id}": {
+      "get": {
+        "tags": ["Credit Management"],
+        "summary": "Get a credit by ID",
+        "description": "Retrieves a specific credit by its ID.",
+        "operationId": "getCreditById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credit found",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          },
+          "404": {
+            "description": "Credit not found",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Credit Management"],
+        "summary": "Update an existing credit",
+        "description": "Updates an existing credit with the provided details. Note: Client ID cannot be changed via this endpoint.",
+        "operationId": "updateCredit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "description": "Credit data to update",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreditDto" },
+              "example": {
+                "amount": 12000.0,
+                "status": "APPROVED",
+                "typeCredit": "PERSONNEL"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Credit updated successfully",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          },
+          "404": {
+            "description": "Credit not found",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Credit Management"],
+        "summary": "Delete a credit by ID",
+        "description": "Deletes a specific credit by its ID.",
+        "operationId": "deleteCredit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Credit deleted successfully" },
+          "404": { "description": "Credit not found" }
+        }
+      }
+    },
+    "/api/v1/clients/{id}": {
+      "get": {
+        "tags": ["Client Management"],
+        "summary": "Get a client by ID",
+        "description": "Retrieves a specific client by their ID.",
+        "operationId": "getClientById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client found",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          },
+          "404": {
+            "description": "Client not found",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Client Management"],
+        "summary": "Update an existing client",
+        "description": "Updates an existing client with the provided details.",
+        "operationId": "updateClient",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "description": "Client data to update",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ClientDto" },
+              "example": { "name": "Jane Doe", "email": "jane.doe@example.com" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Client updated successfully",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          },
+          "404": {
+            "description": "Client not found",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Client Management"],
+        "summary": "Delete a client by ID",
+        "description": "Deletes a specific client by their ID.",
+        "operationId": "deleteClient",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Client deleted successfully" },
+          "404": { "description": "Client not found" },
+          "403": { "description": "Access denied" }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/v1/remboursements/credits/{creditId}": {
+      "get": {
+        "tags": ["Remboursement Management"],
+        "summary": "Get all remboursements for a specific credit",
+        "description": "Retrieves a list of all remboursements associated with a specific credit ID.",
+        "operationId": "getAllRemboursementsForCredit",
+        "parameters": [
+          {
+            "name": "creditId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RemboursementDto" }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Credit not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RemboursementDto" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Remboursement Management"],
+        "summary": "Create a new remboursement for a credit",
+        "description": "Creates a new remboursement for a specific credit with the provided details.",
+        "operationId": "createRemboursement",
+        "parameters": [
+          {
+            "name": "creditId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "description": "Remboursement data to create",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RemboursementDto" },
+              "example": {
+                "amount": 500.0,
+                "date": "2025-06-01",
+                "type": "PAYMENT"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Remboursement created successfully",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          },
+          "404": {
+            "description": "Credit not found",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/RemboursementDto" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/credits/clients/{clientId}": {
+      "get": {
+        "tags": ["Credit Management"],
+        "summary": "Get all credits for a specific client",
+        "description": "Retrieves a list of all credits associated with a specific client ID.",
+        "operationId": "getCreditsByClientId",
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/CreditDto" }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Client not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/CreditDto" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Credit Management"],
+        "summary": "Create a new credit for a client",
+        "description": "Creates a new credit for a specific client with the provided details.",
+        "operationId": "createCredit",
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "description": "Credit data to create",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreditDto" },
+              "example": {
+                "amount": 10000.0,
+                "status": "PENDING",
+                "typeCredit": "PERSONNEL"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Credit created successfully",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          },
+          "404": {
+            "description": "Client not found",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreditDto" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/clients": {
+      "get": {
+        "tags": ["Client Management"],
+        "summary": "Get all clients",
+        "description": "Retrieves a list of all clients.",
+        "operationId": "getAllClients",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ClientDto" }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ClientDto" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Client Management"],
+        "summary": "Create a new client",
+        "description": "Creates a new client with the provided details.",
+        "operationId": "createClient",
+        "requestBody": {
+          "description": "Client data to create",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ClientDto" },
+              "example": { "name": "John Doe", "email": "john.doe@example.com" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Client created successfully",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/ClientDto" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/v1/auth/signup": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register new user",
+        "description": "Registers a new user with username, email, password and roles",
+        "operationId": "registerUser",
+        "requestBody": {
+          "description": "Registration details",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignupRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Registration successful",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/MessageResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/signin": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Authenticate user",
+        "description": "Authenticates a user with username and password, returns JWT token",
+        "operationId": "authenticateUser",
+        "requestBody": {
+          "description": "Login credentials",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/JwtResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/remboursements": {
+      "get": {
+        "tags": ["Remboursement Management"],
+        "summary": "Get all remboursements",
+        "description": "Retrieves a list of all remboursements.",
+        "operationId": "getAllRemboursements",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RemboursementDto" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/credits": {
+      "get": {
+        "tags": ["Credit Management"],
+        "summary": "Get all credits or filter by status",
+        "description": "Retrieves a list of all credits, optionally filtered by status (e.g., EN_ATTENTE, APPROUVE, REJETE).",
+        "operationId": "getAllCredits",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/CreditDto" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RemboursementDto": {
+        "required": ["amount", "date"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the repayment",
+            "format": "int64",
+            "example": 1
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of the repayment",
+            "format": "double",
+            "example": 500.0
+          },
+          "date": {
+            "type": "string",
+            "description": "Date of the repayment",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of repayment",
+            "example": "PAYMENT",
+            "enum": ["PAYMENT", "EARLY_PAYMENT", "PARTIAL_PAYMENT"]
+          },
+          "creditId": {
+            "type": "integer",
+            "description": "ID of the credit associated with this repayment",
+            "format": "int64",
+            "example": 1
+          }
+        },
+        "description": "Remboursement Data Transfer Object - Represents repayment information"
+      },
+      "CreditDto": {
+        "required": ["amount"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the credit",
+            "format": "int64",
+            "example": 1
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount of the credit",
+            "format": "double",
+            "example": 10000.0
+          },
+          "date": {
+            "type": "string",
+            "description": "Date when the credit was created",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the credit",
+            "example": "PENDING",
+            "enum": ["PENDING", "APPROVED", "REJECTED"]
+          },
+          "clientId": {
+            "type": "integer",
+            "description": "ID of the client associated with this credit",
+            "format": "int64",
+            "example": 1
+          },
+          "typeCredit": {
+            "type": "string",
+            "description": "Type of credit",
+            "example": "PERSONNEL",
+            "enum": ["PERSONNEL", "IMMOBILIER", "PROFESSIONNEL"]
+          },
+          "motif": {
+            "type": "string",
+            "description": "Reason for the credit (for personal and professional credits)",
+            "example": "Home renovation"
+          },
+          "bienType": {
+            "type": "string",
+            "description": "Type of property (for real estate credits)",
+            "example": "APARTMENT"
+          },
+          "raisonSociale": {
+            "type": "string",
+            "description": "Company name (for professional credits)",
+            "example": "ABC Corporation"
+          }
+        },
+        "description": "Credit Data Transfer Object - Represents credit information"
+      },
+      "ClientDto": {
+        "required": ["email", "name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the client",
+            "format": "int64",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the client",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the client",
+            "example": "john.doe@example.com"
+          }
+        },
+        "description": "Client Data Transfer Object - Represents client information"
+      },
+      "SignupRequest": {
+        "required": ["email", "password", "username"],
+        "type": "object",
+        "properties": {
+          "username": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string",
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "email": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "description": "Email address",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "maxLength": 40,
+            "minLength": 6,
+            "type": "string",
+            "description": "Password",
+            "example": "password123"
+          },
+          "roles": {
+            "uniqueItems": true,
+            "type": "array",
+            "description": "Set of roles for the user",
+            "example": ["ROLE_CLIENT"],
+            "items": {
+              "type": "string",
+              "description": "Set of roles for the user",
+              "example": "[\"ROLE_CLIENT\"]"
+            }
+          },
+          "clientInfo": { "$ref": "#/components/schemas/ClientDto" }
+        },
+        "description": "Registration Request - New user registration information"
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "User registered successfully!"
+          }
+        },
+        "description": "Message Response - Simple message response"
+      },
+      "LoginRequest": {
+        "required": ["password", "username"],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password",
+            "example": "password123"
+          }
+        },
+        "description": "Login Request - User login credentials"
+      },
+      "JwtResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "type": {
+            "type": "string",
+            "description": "Token type",
+            "example": "Bearer"
+          },
+          "id": {
+            "type": "integer",
+            "description": "User ID",
+            "format": "int64",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address",
+            "example": "john.doe@example.com"
+          },
+          "roles": {
+            "type": "array",
+            "description": "User roles",
+            "example": ["ROLE_CLIENT"],
+            "items": {
+              "type": "string",
+              "description": "User roles",
+              "example": "[\"ROLE_CLIENT\"]"
+            }
+          }
+        },
+        "description": "JWT Response - Authentication token and user information"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
+

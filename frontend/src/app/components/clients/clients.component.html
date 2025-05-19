@@ -1,0 +1,129 @@
+<div class="container clients-container">
+  <!-- Page Header -->
+  <div class="page-title">
+    <h2><i class="fas fa-users me-2"></i>Clients Management</h2>
+    <button class="btn btn-primary btn-add-client" (click)="toggleForm()">
+      <i class="fas fa-plus"></i> Add New Client
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-danger" *ngIf="errorMessage">
+    <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+  </div>
+
+  <!-- Client Form (Add/Edit) -->
+  <div class="client-form-container" *ngIf="showForm">
+    <h3 class="form-title">{{ editMode ? 'Edit Client' : 'Add New Client' }}</h3>
+    <form (ngSubmit)="saveClient()">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="name" class="form-label">Full Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            [(ngModel)]="currentClient.name"
+            required
+          >
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            [(ngModel)]="currentClient.email"
+            required
+          >
+        </div>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" (click)="toggleForm()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          {{ editMode ? 'Update' : 'Save' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="search-container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by name or email..."
+            [(ngModel)]="searchTerm"
+            (input)="search()"
+          >
+        </div>
+      </div>
+      <div class="col-md-6 text-end">
+        <span class="me-2 text-muted">{{ filteredClients.length }} clients found</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- No Clients Message -->
+  <div class="no-clients" *ngIf="!isLoading && filteredClients.length === 0">
+    <i class="fas fa-users fa-3x mb-3 text-muted"></i>
+    <h4>No clients found</h4>
+    <p class="text-muted">There are no clients matching your search criteria.</p>
+    <button class="btn btn-primary mt-2" (click)="toggleForm()">
+      <i class="fas fa-plus me-2"></i>Add Your First Client
+    </button>
+  </div>
+
+  <!-- Clients Cards -->
+  <div class="row" *ngIf="!isLoading && filteredClients.length > 0">
+    <div class="col-md-6 col-lg-4" *ngFor="let client of filteredClients">
+      <div class="card client-card">
+        <div class="card-body">
+          <div class="client-header">
+            <h5 class="card-title">
+              {{ client.name }}
+              <span class="client-id ms-2">#{{ client.id }}</span>
+            </h5>
+            <div class="client-actions">
+              <button class="btn btn-outline-primary btn-sm" [routerLink]="['/clients', client.id]">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-outline-warning btn-sm" (click)="toggleForm(true, client)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="deleteClient(client)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <p class="client-email">
+            <i class="fas fa-envelope me-2"></i>{{ client.email }}
+          </p>
+          <div class="d-flex mt-3">
+            <span class="credits-badge">
+              <i class="fas fa-file-invoice-dollar me-1"></i>5 Credits
+            </span>
+            <a [routerLink]="['/credits/clients', client.id]" class="btn btn-sm btn-outline-secondary ms-auto">
+              <i class="fas fa-file-invoice-dollar me-1"></i>View Credits
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

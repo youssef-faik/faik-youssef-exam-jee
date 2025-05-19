@@ -1,0 +1,102 @@
+.clients-container {
+  padding: 20px 0;
+}
+
+.page-title {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.client-card {
+  transition: all 0.3s;
+  margin-bottom: 20px;
+}
+
+.client-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.client-email {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.client-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.client-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.client-actions button {
+  padding: 0.25rem 0.5rem;
+}
+
+.client-form-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.search-container {
+  margin-bottom: 20px;
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.no-clients {
+  text-align: center;
+  padding: 40px 0;
+  background-color: white;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.credits-badge {
+  padding: 5px 10px;
+  border-radius: 50px;
+  background-color: #e9ecef;
+  font-size: 0.8rem;
+  margin-right: 10px;
+}
+
+.client-id {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: normal;
+}
+
+.btn-add-client {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

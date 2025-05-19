@@ -1,0 +1,262 @@
+<!-- Credit Detail -->
+<div class="container">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="my-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item"><a routerLink="/credits">Credits</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Credit #{{ credit?.id }}</li>
+    </ol>
+  </nav>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading credit details...</p>
+  </div>
+
+  <div *ngIf="!loading && credit">
+    <div class="row">
+      <!-- Credit Details -->
+      <div class="col-md-8">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="bi bi-credit-card me-2"></i>
+              Credit Details
+            </h5>
+            <div>
+              <button class="btn btn-outline-primary btn-sm me-2" (click)="toggleEditMode()" *ngIf="!editMode">
+                <i class="bi bi-pencil me-1"></i>
+                Edit
+              </button>
+              <button class="btn btn-outline-secondary btn-sm me-2" (click)="toggleEditMode()" *ngIf="editMode">
+                <i class="bi bi-x-circle me-1"></i>
+                Cancel
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="saveCredit()" *ngIf="editMode" [disabled]="savingCredit">
+                <i class="bi bi-save me-1"></i>
+                {{ savingCredit ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <dl>
+                  <dt>Credit ID</dt>
+                  <dd>{{ credit.id }}</dd>
+
+                  <dt>Amount</dt>
+                  <dd *ngIf="!editMode">{{ credit.amount | currency:'USD' }}</dd>
+                  <dd *ngIf="editMode">
+                    <input type="number" class="form-control" [(ngModel)]="credit.amount">
+                  </dd>
+
+                  <dt>Status</dt>
+                  <dd *ngIf="!editMode">
+                    <span class="badge rounded-pill text-white" [ngClass]="getStatusClass(credit.status)">
+                      {{ credit.status }}
+                    </span>
+                  </dd>
+                  <dd *ngIf="editMode">
+                    <select class="form-select" [(ngModel)]="credit.status">
+                      <option value="PENDING">Pending</option>
+                      <option value="APPROVED">Approved</option>
+                      <option value="REJECTED">Rejected</option>
+                    </select>
+                  </dd>
+
+                  <dt>Type</dt>
+                  <dd *ngIf="!editMode">{{ getTypeLabel(credit.typeCredit) }}</dd>
+                  <dd *ngIf="editMode">
+                    <select class="form-select" [(ngModel)]="credit.typeCredit">
+                      <option value="PERSONNEL">Personal</option>
+                      <option value="IMMOBILIER">Real Estate</option>
+                      <option value="PROFESSIONNEL">Professional</option>
+                    </select>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-md-6">
+                <dl>
+                  <dt>Client ID</dt>
+                  <dd>
+                    <a [routerLink]="['/clients', credit.clientId]" class="link-primary">
+                      #{{ credit.clientId }}
+                    </a>
+                  </dd>
+
+                  <dt>Date Created</dt>
+                  <dd>{{ credit.date | date:'MMM d, y' }}</dd>
+
+                  <dt *ngIf="credit.typeCredit === 'PERSONNEL' || credit.typeCredit === 'PROFESSIONNEL'">Reason</dt>
+                  <dd *ngIf="!editMode && (credit.typeCredit === 'PERSONNEL' || credit.typeCredit === 'PROFESSIONNEL')">
+                    {{ credit.motif || 'Not specified' }}
+                  </dd>
+                  <dd *ngIf="editMode && (credit.typeCredit === 'PERSONNEL' || credit.typeCredit === 'PROFESSIONNEL')">
+                    <input type="text" class="form-control" [(ngModel)]="credit.motif">
+                  </dd>
+
+                  <dt *ngIf="credit.typeCredit === 'IMMOBILIER'">Property Type</dt>
+                  <dd *ngIf="!editMode && credit.typeCredit === 'IMMOBILIER'">
+                    {{ credit.bienType || 'Not specified' }}
+                  </dd>
+                  <dd *ngIf="editMode && credit.typeCredit === 'IMMOBILIER'">
+                    <input type="text" class="form-control" [(ngModel)]="credit.bienType">
+                  </dd>
+
+                  <dt *ngIf="credit.typeCredit === 'PROFESSIONNEL'">Company Name</dt>
+                  <dd *ngIf="!editMode && credit.typeCredit === 'PROFESSIONNEL'">
+                    {{ credit.raisonSociale || 'Not specified' }}
+                  </dd>
+                  <dd *ngIf="editMode && credit.typeCredit === 'PROFESSIONNEL'">
+                    <input type="text" class="form-control" [(ngModel)]="credit.raisonSociale">
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Progress -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="bi bi-graph-up me-2"></i>
+              Payment Progress
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-4 text-center">
+                <h6 class="text-muted">Total Amount</h6>
+                <h4>{{ credit.amount | currency:'USD' }}</h4>
+              </div>
+              <div class="col-md-4 text-center">
+                <h6 class="text-muted">Total Repaid</h6>
+                <h4>{{ getTotalRepaid() | currency:'USD' }}</h4>
+              </div>
+              <div class="col-md-4 text-center">
+                <h6 class="text-muted">Remaining</h6>
+                <h4>{{ getRemaining() | currency:'USD' }}</h4>
+              </div>
+            </div>
+            <div class="progress" style="height: 20px;">
+              <div
+                class="progress-bar bg-success"
+                role="progressbar"
+                [style.width]="(getTotalRepaid() / credit.amount * 100) + '%'"
+                [attr.aria-valuenow]="getTotalRepaid() / credit.amount * 100"
+                aria-valuemin="0"
+                aria-valuemax="100">
+                {{ (getTotalRepaid() / credit.amount * 100) | number:'1.0-0' }}%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Remboursements Section -->
+      <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="bi bi-cash-coin me-2"></i>
+              Add Payment
+            </h5>
+          </div>
+          <div class="card-body">
+            <form (ngSubmit)="addRemboursement()">
+              <div class="mb-3">
+                <label for="amount" class="form-label">Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="amount"
+                    [(ngModel)]="newRemboursement.amount"
+                    name="amount"
+                    required
+                    min="1"
+                    step="0.01">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="date" class="form-label">Payment Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="date"
+                  [(ngModel)]="newRemboursement.date"
+                  name="date"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label for="type" class="form-label">Payment Type</label>
+                <select
+                  class="form-select"
+                  id="type"
+                  [(ngModel)]="newRemboursement.type"
+                  name="type"
+                  required>
+                  <option value="PAYMENT">Regular Payment</option>
+                  <option value="EARLY_PAYMENT">Early Payment</option>
+                  <option value="PARTIAL_PAYMENT">Partial Payment</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                class="btn btn-primary w-100"
+                [disabled]="savingRemboursement || newRemboursement.amount <= 0">
+                <i class="bi bi-plus-circle me-1"></i>
+                {{ savingRemboursement ? 'Adding...' : 'Add Payment' }}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="bi bi-list-check me-2"></i>
+              Payment History
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div *ngIf="remboursements.length === 0" class="text-center p-4">
+              <i class="bi bi-piggy-bank fs-1 text-muted"></i>
+              <p class="mt-3">No payments recorded for this credit yet.</p>
+            </div>
+
+            <ul class="list-group list-group-flush" *ngIf="remboursements.length > 0">
+              <li class="list-group-item" *ngFor="let r of remboursements">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-0">{{ r.amount | currency:'USD' }}</h6>
+                    <small class="text-muted">{{ r.date | date:'MMM d, y' }}</small>
+                    <br>
+                    <small class="badge bg-info text-white">{{ getRemboursementTypeLabel(r.type) }}</small>
+                  </div>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteRemboursement(r.id!)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

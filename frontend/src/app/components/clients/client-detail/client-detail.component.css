@@ -1,0 +1,108 @@
+.client-detail-container {
+  padding: 20px 0;
+}
+
+.page-header {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+}
+
+.back-link {
+  margin-right: 15px;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+.card {
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.client-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 5px;
+}
+
+.info-value {
+  margin-bottom: 15px;
+}
+
+.email-value {
+  word-break: break-all;
+}
+
+.section-title {
+  margin-bottom: 20px;
+  position: relative;
+  padding-left: 15px;
+  font-weight: 600;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 5px;
+  background-color: var(--primary-color);
+  border-radius: 10px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.btn-action {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.credit-card {
+  transition: all 0.3s;
+}
+
+.credit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.credit-amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.credit-date {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.credit-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn-view-repayments {
+  font-size: 0.85rem;
+}

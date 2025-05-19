@@ -1,0 +1,250 @@
+<!-- Remboursement Detail -->
+<div class="container">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="my-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item"><a routerLink="/remboursements">Repayments</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Repayment #{{ remboursement?.id }}</li>
+    </ol>
+  </nav>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading repayment details...</p>
+  </div>
+
+  <div *ngIf="!loading && remboursement && credit">
+    <div class="row">
+      <!-- Remboursement Details -->
+      <div class="col-md-8">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center bg-light">
+            <h5 class="mb-0">
+              <i class="bi bi-cash-coin me-2"></i>
+              Repayment Details
+            </h5>
+            <div>
+              <button class="btn btn-outline-primary btn-sm me-2" (click)="toggleEditMode()" *ngIf="!editMode">
+                <i class="bi bi-pencil me-1"></i>
+                Edit
+              </button>
+              <button class="btn btn-outline-secondary btn-sm me-2" (click)="toggleEditMode()" *ngIf="editMode">
+                <i class="bi bi-x-circle me-1"></i>
+                Cancel
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="saveRemboursement()" *ngIf="editMode" [disabled]="savingRemboursement">
+                <i class="bi bi-save me-1"></i>
+                {{ savingRemboursement ? 'Saving...' : 'Save Changes' }}
+              </button>
+              <button class="btn btn-outline-danger btn-sm ms-2" (click)="deleteRemboursement()">
+                <i class="bi bi-trash me-1"></i>
+                Delete
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <dl>
+                  <dt>Repayment ID</dt>
+                  <dd>{{ remboursement.id }}</dd>
+
+                  <dt>Amount</dt>
+                  <dd *ngIf="!editMode">{{ remboursement.amount | currency:'USD' }}</dd>
+                  <dd *ngIf="editMode">
+                    <div class="input-group mb-3">
+                      <span class="input-group-text">$</span>
+                      <input type="number" class="form-control" [(ngModel)]="remboursement.amount" step="0.01" min="0.01">
+                    </div>
+                  </dd>
+
+                  <dt>Payment Date</dt>
+                  <dd *ngIf="!editMode">{{ remboursement.date | date:'longDate' }}</dd>
+                  <dd *ngIf="editMode">
+                    <input type="date" class="form-control" [(ngModel)]="remboursement.date">
+                  </dd>
+
+                  <dt>Payment Type</dt>
+                  <dd *ngIf="!editMode">
+                    <span class="badge rounded-pill text-white" [ngClass]="getTypeClass(remboursement.type)">
+                      {{ getRemboursementTypeLabel(remboursement.type) }}
+                    </span>
+                  </dd>
+                  <dd *ngIf="editMode">
+                    <select class="form-select" [(ngModel)]="remboursement.type">
+                      <option value="PAYMENT">Regular Payment</option>
+                      <option value="EARLY_PAYMENT">Early Payment</option>
+                      <option value="PARTIAL_PAYMENT">Partial Payment</option>
+                    </select>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-md-6">
+                <div class="card bg-light">
+                  <div class="card-header">
+                    <h6 class="mb-0">Associated Credit</h6>
+                  </div>
+                  <div class="card-body">
+                    <dl class="mb-0">
+                      <dt>Credit ID</dt>
+                      <dd>
+                        <a [routerLink]="['/credits', credit.id]" class="link-primary">
+                          #{{ credit.id }}
+                        </a>
+                      </dd>
+
+                      <dt>Credit Amount</dt>
+                      <dd>{{ credit.amount | currency:'USD' }}</dd>
+
+                      <dt>Credit Status</dt>
+                      <dd>
+                        <span class="badge rounded-pill text-white" [ngClass]="getCreditStatusClass(credit.status)">
+                          {{ credit.status }}
+                        </span>
+                      </dd>
+
+                      <dt>Credit Type</dt>
+                      <dd>{{ credit.typeCredit }}</dd>
+
+                      <dt>Client</dt>
+                      <dd>
+                        <a [routerLink]="['/clients', credit.clientId]" class="link-primary">
+                          Client #{{ credit.clientId }}
+                        </a>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row">
+              <div class="col-12">
+                <p class="text-muted mb-2">Payment receipt confirmation</p>
+                <div class="receipt bg-light p-4 rounded">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="mb-3">Payment Receipt</h4>
+                      <p class="mb-1">Payment ID: #{{ remboursement.id }}</p>
+                      <p class="mb-1">Date: {{ remboursement.date | date:'longDate' }}</p>
+                      <p class="mb-1">Type: {{ getRemboursementTypeLabel(remboursement.type) }}</p>
+                    </div>
+                    <div class="text-end">                      <h5>Banking System</h5>
+                      <p class="mb-1">123 Banking Street</p>
+                      <p class="mb-1">info&#64;banking-system.com</p>
+                      <p class="mb-1">+1 (123) 456-7890</p>
+                    </div>
+                  </div>
+
+                  <hr>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6>Credit Details</h6>
+                      <p class="mb-1">Credit ID: #{{ credit.id }}</p>
+                      <p class="mb-1">Credit Type: {{ credit.typeCredit }}</p>
+                      <p class="mb-1">Client ID: #{{ credit.clientId }}</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                      <h6>Payment Amount</h6>
+                      <h4 class="text-success">{{ remboursement.amount | currency:'USD' }}</h4>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 text-center">
+                    <p class="mb-1">Thank you for your payment</p>
+                    <small class="text-muted">This is an official receipt of your payment.</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Information Panel -->
+      <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">
+              <i class="bi bi-info-circle me-2"></i>
+              Payment Information
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info" role="alert">
+              <h6 class="alert-heading">
+                <i class="bi bi-lightbulb me-2"></i>
+                About Payment Types
+              </h6>
+              <hr>
+              <p class="mb-1"><strong>Regular Payment:</strong> Scheduled payments according to the agreed payment plan.</p>
+              <p class="mb-1"><strong>Early Payment:</strong> Payments made before the scheduled date.</p>
+              <p class="mb-1"><strong>Partial Payment:</strong> Payments that cover only part of the scheduled amount.</p>
+            </div>
+
+            <div class="alert alert-light border" role="alert">
+              <h6 class="alert-heading">
+                <i class="bi bi-check-circle me-2"></i>
+                Payment Status
+              </h6>
+              <hr>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  Payment successfully processed
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-calendar-check text-primary me-2"></i>
+                  Recorded on {{ remboursement.date | date:'MMM d, y' }}
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-upc-scan text-secondary me-2"></i>
+                  Transaction ID: {{ 'TRX' + remboursement.id + credit.id + '00' + (remboursement.id || 0) * 7 }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">
+              <i class="bi bi-arrow-return-left me-2"></i>
+              Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              <a [routerLink]="['/credits', credit.id]" class="btn btn-outline-primary">
+                <i class="bi bi-credit-card me-2"></i>
+                View Credit Details
+              </a>
+              <a [routerLink]="['/remboursements']" class="btn btn-outline-secondary">
+                <i class="bi bi-list-check me-2"></i>
+                All Repayments
+              </a>
+              <button class="btn btn-outline-success">
+                <i class="bi bi-printer me-2"></i>
+                Print Receipt
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
